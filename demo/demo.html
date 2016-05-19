@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" id="teacherApp">
+<head>
+<meta charset="utf-8" />
+<title>教师管理</title>
+<link href="../vendor/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+	.page-list .pagination {float:left;}
+	.page-list .pagination span {cursor: pointer;}
+	.page-list .pagination .separate span{cursor: default; border-top:none;border-bottom:none;}
+	.page-list .pagination .separate span:hover {background: none;}
+	.page-list .page-total {float:left; margin: 25px 20px;}
+	.page-list .page-total input, .page-list .page-total select{height: 26px; border: 1px solid #ddd;}
+	.page-list .page-total input {width: 40px; padding-left:3px;}
+	.page-list .page-total select {width: 50px;}
+</style>
+</head>
+<body>
+	<nav id="menu" class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<form class="navbar-form navbar-right" role="search">
+				<div class="form-group">
+					<input type="text" class="form-control" placeholder="查找教师" v-model="kwInput"/>
+				</div>
+				<button type="button" class="btn btn-default" @click="search(kwInput)">查找</button>
+			</form>
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#"> <img alt="LOGO"></a>
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">教师列表<span class="sr-only">(current)</span></a></li>
+					<li><a href="#" @click="create()">添加教师</a>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="container">
+		<table class="table">
+			<tr>
+				<th>#</th>
+				<th>类型</th>
+				<th>编号</th>
+				<th>姓名</th>
+				<th>单位</th>
+				<th>科室</th>
+				<th>操作</th>
+			</tr>
+			<tr v-for="teacher in teachers" track-by="$index">
+				<td v-text="(paginationConf.currentPage - 1) * paginationConf.itemsPerPage + $index + 1"></td>
+				<td v-text="teacher.type"></td>
+				<td v-text="teacher.code"></td>
+				<td v-text="teacher.name"></td>
+				<td v-text="teacher.unit"></td>
+				<td v-text="teacher.dept"></td>
+				<td>
+					<a href="#" @click="modify(teacher.logicid)">编辑</a>
+					<a href="#" @click="remove(teacher.logicid)">删除</a>
+				</td>
+			</tr>
+		</table>
+		<page-component :conf.sync="paginationConf"></page-component>
+	</div>
+
+	<!-- JavaScript -->
+	<script type="text/javascript" src="../vendor/jquery/1.12.1/jquery.min.js"></script>
+	<script type="text/javascript" src="../vendor/vuejs/vue.min.js"></script>
+	<script type="text/javascript" src="../js/page.js"></script>
+	<script>
+	var vm = new Vue({
+		el: '#teacherApp',
+		data: {
+			teachers:[],
+			keyword: '',
+			paginationConf : {
+				currentPage: 1,
+				totalItems: 1000,
+				itemsPerPage: 15,
+				pagesLength: 9,
+				perPageOptions: [10, 15, 30, 50, 100],
+				onChange : 'list',
+			},
+		},
+		methods: {
+			create: function() {
+				
+			},
+			modify: function(id){
+				
+			},
+			remove: function(id){
+				
+			},
+			list: function() {
+				var senddata = {
+					'keyword' : this.keyword,
+					'page' : this.paginationConf.currentPage,
+					'size' : this.paginationConf.itemsPerPage,
+				};
+				$.post('load', senddata, function(data, status) {
+					if ('success' == status) {
+						var jsondata = $.parseJSON(data);
+						vm.paginationConf.totalItems = jsondata.count
+						vm.teachers = jsondata.list;
+					}
+				});
+			},
+			search: function(kwInput) {
+				this.keyword = kwInput;
+				this.list();
+			}
+		}
+	});
+	</script>
+</body>
+</html>
